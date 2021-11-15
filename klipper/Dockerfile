@@ -1,4 +1,4 @@
-FROM python:3.9 as builder
+FROM python:3.10.0rc1-buster as builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -9,7 +9,7 @@ ARG MOONRAKER_VENV_DIR=${HOME}/moonraker-env
 
 RUN useradd -d ${HOME} -ms /bin/bash ${USER}
 RUN apt-get update && \
-    apt-get install -y locales git sudo wget curl gzip tar python-virtualenv virtualenv python-dev libffi-dev libncurses-dev libusb-dev gpiod python3-virtualenv python3-dev libopenjp2-7 python3-libgpiod liblmdb0 libsodium-dev
+    apt-get install -y locales git systemd sudo wget curl gzip tar python-virtualenv virtualenv python-dev libffi-dev libncurses-dev libusb-dev gpiod python3-virtualenv python3-dev libopenjp2-7 python3-libgpiod liblmdb0 libsodium-dev
 RUN sed -i -e 's/# en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/' /etc/locale.gen
 RUN locale-gen
 
@@ -22,26 +22,32 @@ WORKDIR ${HOME}
 
 ### Klipper setup ###
 RUN git clone https://github.com/KevinOConnor/klipper.git
+RUN sed -i 's/0.4.15/0.4.17/g' klipper/scripts/klippy-requirements.txt
+RUN sed -i 's/1.12.2/1.12.3/g' klipper/scripts/klippy-requirements.txt
 RUN [ ! -d ${KLIPPER_VENV_DIR} ] && virtualenv ${KLIPPER_VENV_DIR}
 RUN ${KLIPPER_VENV_DIR}/bin/python -m pip install pip -U
 RUN ${KLIPPER_VENV_DIR}/bin/pip install wheel
 RUN ${KLIPPER_VENV_DIR}/bin/pip install -r klipper/scripts/klippy-requirements.txt
+RUN sed -i 's/0.4.17/0.4.15/g' klipper/scripts/klippy-requirements.txt
+RUN sed -i 's/1.12.3/1.12.2/g' klipper/scripts/klippy-requirements.txt
+
 
 # Install moonraker
-RUN git clone https://github.com/Arksine/moonraker.git
+RUN git clone -b v0.7.1 https://github.com/Arksine/moonraker.git
 RUN [ ! -d ${MOONRAKER_VENV_DIR} ] && python3 -m venv ${MOONRAKER_VENV_DIR}
 RUN ${MOONRAKER_VENV_DIR}/bin/python -m pip install pip -U
 RUN ${MOONRAKER_VENV_DIR}/bin/pip install wheel gpiod
 
 RUN ${MOONRAKER_VENV_DIR}/bin/pip install -r moonraker/scripts/moonraker-requirements.txt
 
-FROM python:3.9-slim as image
+FROM python:3.10-rc-slim-buster as image
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
+    systemd \
     git \
     gcc \
     locales \
@@ -84,7 +90,7 @@ RUN useradd --user-group --no-log-init --shell /bin/false -m -d ${HOME} ${USER} 
     mkdir -p /var/log/klipper && chown ${USER}:${USER} /var/log/klipper ${HOME} && \
     pip install --no-cache supervisord-dependent-startup gpiod
 
-RUN mkdir -p /usr/lib/python3 && ln -s /usr/local/lib/python3.9/site-packages /usr/lib/python3/dist-packages
+RUN mkdir -p /usr/lib/python3 && ln -s /usr/local/lib/python3.10/site-packages /usr/lib/python3/dist-packages
 
 USER ${USER}
 WORKDIR ${HOME}

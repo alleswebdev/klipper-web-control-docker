@@ -1,4 +1,4 @@
-FROM debian as unzip
+FROM debian:buster as unzip
 
 ARG FRONTEND_ZIP_URL=https://github.com/cadriel/fluidd/releases/latest/download/fluidd.zip
 
