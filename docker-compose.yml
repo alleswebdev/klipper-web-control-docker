@@ -40,7 +40,7 @@ services:
       - moonraker_data:/home/klippy/.moonraker
       - ./ender/printer.cfg:/home/klippy/.config/printer.cfg
     devices:
-      - /dev/serial/by-id/usb-Klipper_stm32f103xe_30FFD9054246303712560657-if00:/dev/serial/by-id/usb-Klipper_stm32f103xe_30FFD9054246303712560657-if00
+      - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/serial/by-id/usb-Klipper_stm32f103xe_30FFD9054246303712560657-if00
 
   klipper_ghost:
     image: dimalo/klipper-moonraker
