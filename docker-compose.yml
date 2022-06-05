@@ -20,7 +20,9 @@ services:
       - ./ulti/printer.cfg:/home/klippy/.config/printer.cfg
       - ./ulti/macros:/home/klippy/.config/macros
     devices:
-      - /dev/serial/by-id/usb-Klipper_lpc1768_77777-if00:/dev/serial/by-id/usb-Klipper_lpc1768_77777-if00
+      - /dev/serial/by-id/usb-Klipper_lpc1768_18110D0D02244D536DDEE54E030000F5-if00:/dev/serial/by-id/usb-Klipper_lpc1768_77777-if00
+      #- /dev/serial/by-id/usb-Klipper_lpc1768_1AE0000C47104AAF48E6645DC02000F5-if00:/dev/serial/by-id/usb-Klipper_lpc1768_77777-if00
+
 
   klipper_ender:
     image: dimalo/klipper-moonraker
@@ -40,7 +42,7 @@ services:
       - moonraker_data:/home/klippy/.moonraker
       - ./ender/printer.cfg:/home/klippy/.config/printer.cfg
     devices:
-      - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/serial/by-id/usb-Klipper_stm32f103xe_30FFD9054246303712560657-if00
+      - /dev/serial/by-id/usb-Klipper_lpc1768_1AE0000C47104AAF48E6645DC02000F5-if00:/dev/serial/by-id/usb-Klipper_lpc1768_18110D0D02244D536DDEE54E030000F5-if00
 
   klipper_ghost:
     image: dimalo/klipper-moonraker
