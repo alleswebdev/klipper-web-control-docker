@@ -1,0 +1,106 @@
+version: '3.4'
+
+services:
+  klipper_ender:
+    image: dimalo/klipper-moonraker
+    build:
+      dockerfile: ./klipper/Dockerfile
+      context: .
+      args:
+        DEVICE_GROUP: device
+        DEVICE_GID: 987
+    container_name: klipper_ender
+    ports:
+      - 7127:7125
+    restart: unless-stopped
+    volumes:
+      - gcode_files:/home/klippy/gcode_files
+      - ./config:/home/klippy/.config
+      - moonraker_data:/home/klippy/.moonraker
+      - ./ender/printer.cfg:/home/klippy/.config/printer.cfg
+    devices:
+      - /dev/serial/by-path/ender:/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0
+
+  fluidd:
+    image: cadriel/fluidd
+    build:
+      dockerfile: Dockerfile
+      context: frontend
+    container_name: fluidd
+    ports:
+      - 8010:80
+    depends_on: 
+      - klipper_ender
+    links:
+      - klipper_ender:klipper
+
+  klipper_ender2:
+    image: dimalo/klipper-moonraker
+    build:
+      dockerfile: ./klipper/Dockerfile
+      context: .
+      args:
+        DEVICE_GROUP: device
+        DEVICE_GID: 987
+    container_name: klipper_ender2
+    ports:
+      - 7128:7125
+    restart: unless-stopped
+    volumes:
+      - gcode_files:/home/klippy/gcode_files
+      - ./config:/home/klippy/.config
+      - moonraker_data:/home/klippy/.moonraker
+      - ./ender2/printer.cfg:/home/klippy/.config/printer.cfg
+    devices:
+      - /dev/serial/by-path/ender2:/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0
+
+  fluidd2:
+    image: cadriel/fluidd
+    build:
+      dockerfile: Dockerfile
+      context: frontend
+    container_name: fluidd2
+    ports:
+      - 8011:80
+    depends_on: 
+      - klipper_ender2
+    links:
+      - klipper_ender2:klipper
+
+  klipper_ender3:
+    image: dimalo/klipper-moonraker
+    build:
+      dockerfile: ./klipper/Dockerfile
+      context: .
+      args:
+        DEVICE_GROUP: device
+        DEVICE_GID: 987
+    container_name: klipper_ender3
+    ports:
+      - 7129:7125
+    restart: unless-stopped
+    volumes:
+      - gcode_files:/home/klippy/gcode_files
+      - ./config:/home/klippy/.config
+      - moonraker_data:/home/klippy/.moonraker
+      - ./ender_old/printer.cfg:/home/klippy/.config/printer.cfg
+    devices:
+     - /dev/serial/by-path/ender3:/dev/serial/by-id/usb-Klipper_stm32f103xe_30FFD9054246303712560657-if00
+  fluidd3:
+    image: cadriel/fluidd
+    build:
+      dockerfile: Dockerfile
+      context: frontend
+    container_name: fluidd3
+    ports:
+      - 8012:80
+    depends_on: 
+      - klipper_ender3
+    links:
+      - klipper_ender3:klipper
+
+
+volumes: 
+  gcode_files:
+  moonraker_data:
+
